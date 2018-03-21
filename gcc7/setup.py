@@ -69,6 +69,45 @@ def _copy_dirs(src_dir, dst_dir):
 # Copy the GCC installation into the python package root
 _copy_dirs(args_extra.gcc_install_prefix, join(_script_path(), "gcc7", "gcc_root"))
 
+# One OSX, we have to make `install_name` of the GCC libraries relative
+if platform.system() == "Darwin":
+    gcc_lib_path = join(args_extra.gcc_install_prefix, "lib")
+    libs  = glob.glob(join(_script_path(), "gcc7", "gcc_root", "lib", "libatomic*.dylib"))
+    libs += glob.glob(join(_script_path(), "gcc7", "gcc_root", "lib", "libgcc_s*.dylib"))
+    libs += glob.glob(join(_script_path(), "gcc7", "gcc_root", "lib", "libgomp*.dylib"))
+    libs += glob.glob(join(_script_path(), "gcc7", "gcc_root", "lib", "libquadmath*.dylib"))
+    libs += glob.glob(join(_script_path(), "gcc7", "gcc_root", "lib", "libssp*.dylib"))
+    all_files = {}
+    for file_path in libs:
+        file_name = os.path.basename(file_path)
+        assert(file_name not in all_files)
+        all_files[file_name] = file_path
+
+    # Make the search paths relative
+    for file_path in libs:
+        cmd = "otool -L %s" % (file_path)
+        otool_res = subprocess.check_output(cmd, shell=True).decode('utf-8')
+        for line in otool_res.splitlines()[1:]:  # Each line in `otool_res` represents a linking path (except 1. line)
+            dylib_path = line.strip().split()[0]
+            dylib_name = os.path.basename(dylib_path)
+            if os.path.basename(dylib_path) in all_files:
+                load_path = " @loader_path%s" % all_files[dylib_name].replace(os.path.dirname(file_path), "")
+                cmd = "install_name_tool -change %s %s %s" % (dylib_path, load_path, file_path)
+                print(cmd)
+                subprocess.check_output(cmd, shell=True)
+
+    # Make the instal_name relative
+    for file_path in libs:
+        cmd = "otool -D %s" % (file_path)
+        otool_res = subprocess.check_output(cmd, shell=True).decode('utf-8')
+        for line in otool_res.splitlines()[1:]:  # Each line in `otool_res` represents a linking path (except 1. line)
+            dylib_path = line.strip().split()[0]
+            if gcc_lib_path in dylib_path:
+                run_path = dylib_path.replace(gcc_lib_path, "@rpath")
+                cmd = 'install_name_tool -id %s %s' % (run_path, file_path)
+                print(cmd)
+                subprocess.check_output(cmd, shell=True)
+
 
 # Get the long description from the README file
 with open(os.path.join(_script_path(), '../README.md'), encoding='utf-8') as f:
@@ -92,7 +131,7 @@ class taged_bdist_wheel(bdist_wheel):
 setup(
     cmdclass={'bdist_wheel': taged_bdist_wheel},
     name='gcc7',
-    version="0.0.3",
+    version="0.0.4",
     description='GCC v7 binaries',
     long_description=long_description,
 
