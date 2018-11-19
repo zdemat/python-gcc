@@ -14,6 +14,6 @@ pwd
 mkdir -p ~/gcc_build
 cd ~/gcc_build
 ~/gcc-7.2.0/configure --prefix ~/gcc7_install/ --enable-languages=c --disable-bootstrap --enable-nls
-make &> ~/gcc_build.out
+make
 make install
 
