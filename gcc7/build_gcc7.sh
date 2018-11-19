@@ -18,9 +18,14 @@ make install
 cd ~/gcc7_install/
 rm -R share
 find . -name "*.a" -type f|xargs rm -f
+find ./libexec/gcc/x86_64-pc-linux-gnu/7.3.0 -maxdepth 1 -type f -size +10M -print0 | xargs -0 \
+    strip --strip-unneeded \
+    --remove-section=.comment --remove-section=.note || true
+
 ls
 ls -Rlh
 du -sh
+
 
 
 
