@@ -17,6 +17,7 @@ make &> log.txt
 make install
 cd ~/gcc7_install/
 rm -R share
+find . -name "*.a" -type f|xargs rm -f
 ls
 ls -Rlh
 du -sh
