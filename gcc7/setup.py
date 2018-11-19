@@ -23,7 +23,7 @@ parser.add_argument(
 )
 (args_extra, argv) = parser.parse_known_args()
 sys.argv = [sys.argv[0]] + argv  # Write the remaining arguments back to `sys.argv` for distutils to read
-assert(args_extra.gcc_install_prefix)
+assert (args_extra.gcc_install_prefix)
 
 
 def _script_path():
@@ -66,26 +66,43 @@ def _copy_dirs(src_dir, dst_dir):
     print("copy %s => %s" % (src_dir, dst_dir))
 
 
+def _update_rpath(filename_list, rpath):
+    """Update the RPATH of the files in `filename_list`"""
+
+    if platform.system() == "Darwin":
+        return
+
+    for filename in filename_list:
+        cmd = "patchelf --set-rpath '%s' %s" % (rpath, filename)
+        print(cmd)
+        subprocess.check_call(cmd, shell=True)
+
+
 # Copy the GCC installation into the python package root
 _copy_dirs(args_extra.gcc_install_prefix, join(_script_path(), "gcc7", "gcc_root"))
 
-# One OSX, we have to make `install_name` of the GCC libraries relative
-if platform.system() == "Darwin":
-    gcc_lib_path = join(args_extra.gcc_install_prefix, "lib")
-    libs  = glob.glob(join(_script_path(), "gcc7", "gcc_root", "lib", "libatomic*.dylib"))
-    libs += glob.glob(join(_script_path(), "gcc7", "gcc_root", "lib", "libgcc_s*.dylib"))
-    libs += glob.glob(join(_script_path(), "gcc7", "gcc_root", "lib", "libgomp*.dylib"))
-    libs += glob.glob(join(_script_path(), "gcc7", "gcc_root", "lib", "libquadmath*.dylib"))
-    libs += glob.glob(join(_script_path(), "gcc7", "gcc_root", "lib", "libssp*.dylib"))
-    all_files = {}
-    for file_path in libs:
-        file_name = os.path.basename(file_path)
-        assert(file_name not in all_files)
-        all_files[file_name] = file_path
+gcc_lib_path = join(args_extra.gcc_install_prefix, "lib")
+libs = glob.glob(join(_script_path(), "gcc7", "gcc_root", "lib", "libatomic*"))
+libs += glob.glob(join(_script_path(), "gcc7", "gcc_root", "lib", "libgcc_s*"))
+libs += glob.glob(join(_script_path(), "gcc7", "gcc_root", "lib", "libgomp*"))
+libs += glob.glob(join(_script_path(), "gcc7", "gcc_root", "lib", "libquadmath*"))
+libs += glob.glob(join(_script_path(), "gcc7", "gcc_root", "lib", "libssp*"))
+print(libs)
 
+all_files = {}
+for file_path in libs:
+    file_name = os.path.basename(file_path)
+    assert (file_name not in all_files)
+    all_files[file_name] = file_path
+
+if platform.system() == "Linux":
+    # Update the RPATH of the Python extensions to look in the current directory
+    _update_rpath(all_files, '$ORIGIN')
+
+elif platform.system() == "Darwin":
     # Make the search paths relative
     for file_path in libs:
-        cmd = "otool -L %s" % (file_path)
+        cmd = "otool -L %s" % file_path
         otool_res = subprocess.check_output(cmd, shell=True).decode('utf-8')
         for line in otool_res.splitlines()[1:]:  # Each line in `otool_res` represents a linking path (except 1. line)
             dylib_path = line.strip().split()[0]
@@ -96,9 +113,9 @@ if platform.system() == "Darwin":
                 print(cmd)
                 subprocess.check_output(cmd, shell=True)
 
-    # Make the instal_name relative
+    # Make the install_name relative
     for file_path in libs:
-        cmd = "otool -D %s" % (file_path)
+        cmd = "otool -D %s" % file_path
         otool_res = subprocess.check_output(cmd, shell=True).decode('utf-8')
         for line in otool_res.splitlines()[1:]:  # Each line in `otool_res` represents a linking path (except 1. line)
             dylib_path = line.strip().split()[0]
@@ -107,7 +124,6 @@ if platform.system() == "Darwin":
                 cmd = 'install_name_tool -id %s %s' % (run_path, file_path)
                 print(cmd)
                 subprocess.check_output(cmd, shell=True)
-
 
 # Get the long description from the README file
 with open(os.path.join(_script_path(), '../README.md'), encoding='utf-8') as f:
@@ -171,7 +187,7 @@ setup(
 
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
-    #packages=find_packages(exclude=['contrib', 'docs', 'tests']),
+    # packages=find_packages(exclude=['contrib', 'docs', 'tests']),
     packages=['gcc7'],
 
     package_data={
