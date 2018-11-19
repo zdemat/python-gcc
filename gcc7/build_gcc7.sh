@@ -9,7 +9,7 @@ pwd
 ls
 tar -xf deps/gcc-7.3.0.tar.xz
 ls
-ls ../deps
+ls deps
 cd gcc-7.3.0
 mv ../deps/* .
 ls
