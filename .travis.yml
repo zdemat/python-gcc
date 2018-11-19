@@ -6,7 +6,7 @@ before_install:
     - python -m pip install --user twine
 
 install:
-    - travis_wait bash gcc7/build_gcc7.sh
+    - travis_wait 40 bash gcc7/build_gcc7.sh
 
 script:
     - cd gcc7 && python setup.py --gcc-install-prefix ~/gcc7_install/ bdist_wheel
