@@ -16,6 +16,7 @@ cd ~/gcc_build
 make &> log.txt
 make install
 cd ~/gcc7_install/
+rm -R share
 ls
 ls -Rlh
 du -sh
