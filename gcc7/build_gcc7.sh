@@ -3,17 +3,17 @@
 
 set -e
 set -x
-cd ~/
 
 # Install gcc7 (/opt/gcc7)
-wget ftp://ftp.fu-berlin.de/unix/languages/gcc/releases/gcc-7.2.0/gcc-7.2.0.tar.gz
-tar -xzf gcc-7.2.0.tar.gz
-cd gcc-7.2.0
 pwd
+ls
+tar -xf gcc-7.3.0.tar.gz
+ls
+cd gcc-7.3.0
 ./contrib/download_prerequisites
 mkdir -p ~/gcc_build
 cd ~/gcc_build
-~/gcc-7.2.0/configure --prefix ~/gcc7_install/ --enable-languages=c --disable-bootstrap --enable-nls
+~/gcc-7.3.0/configure --prefix ~/gcc7_install/ --enable-languages=c --disable-bootstrap --enable-nls
 make
 make install
 
