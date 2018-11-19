@@ -21,10 +21,6 @@ find . -name "*.a" -type f|xargs rm -f
 ls
 ls -Rlh
 du -sh
-cd share
-du -sh
-cd locale
-du -sh
 
 
 
