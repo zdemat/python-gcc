@@ -7,7 +7,7 @@ set -x
 # Install gcc7 (/opt/gcc7)
 pwd
 ls
-tar -xf gcc-7.3.0.tar.gz
+tar -xf gcc-7.3.0.tar.xz
 ls
 cd gcc-7.3.0
 ./contrib/download_prerequisites
