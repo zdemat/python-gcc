@@ -4,7 +4,7 @@ before_install:
     - which python
     - python --version
     - python -m pip install --user twine
-    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt install -y build-essential; fi
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -y build-essential gcc-multilib ; fi
 
 install:
     #- travis_wait 40 bash gcc7/build_gcc7.sh
