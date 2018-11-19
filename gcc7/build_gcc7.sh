@@ -12,8 +12,7 @@ cd ~/gcc_src
 ./contrib/download_prerequisites --no-graphite
 mkdir ~/gcc_build
 cd ~/gcc_build
-~/gcc_src/configure --prefix ~/gcc7_install/ --enable-languages=c --disable-bootstrap --enable-nls \
-     --with-multilib-list=m64
+~/gcc_src/configure --prefix ~/gcc7_install/ --enable-languages=c --disable-bootstrap --enable-nls --disable-lto --disable-multilib
 make &> log.txt
 make install
 cd ~/gcc7_install/
