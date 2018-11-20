@@ -81,7 +81,7 @@ def _update_rpath(filename_list, rpath):
 # Copy the GCC installation into the python package root
 _copy_dirs(args_extra.gcc_install_prefix, join(_script_path(), "gcc7", "gcc_root"))
 
-if platform.system() == "Linux":
+if platform.system() == "Linux" and False:
     libs = glob.glob(join(_script_path(), "gcc7", "gcc_root", "lib64", "libatomic*.so"))
     libs += glob.glob(join(_script_path(), "gcc7", "gcc_root", "lib64", "libgcc*.so"))
     libs += glob.glob(join(_script_path(), "gcc7", "gcc_root", "lib64", "libgomp*.so"))
