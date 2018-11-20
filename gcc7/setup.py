@@ -81,25 +81,37 @@ def _update_rpath(filename_list, rpath):
 # Copy the GCC installation into the python package root
 _copy_dirs(args_extra.gcc_install_prefix, join(_script_path(), "gcc7", "gcc_root"))
 
-gcc_lib_path = join(args_extra.gcc_install_prefix, "lib")
-libs = glob.glob(join(_script_path(), "gcc7", "gcc_root", "lib", "libatomic*"))
-libs += glob.glob(join(_script_path(), "gcc7", "gcc_root", "lib", "libgcc_s*"))
-libs += glob.glob(join(_script_path(), "gcc7", "gcc_root", "lib", "libgomp*"))
-libs += glob.glob(join(_script_path(), "gcc7", "gcc_root", "lib", "libquadmath*"))
-libs += glob.glob(join(_script_path(), "gcc7", "gcc_root", "lib", "libssp*"))
-print(libs)
-
-all_files = {}
-for file_path in libs:
-    file_name = os.path.basename(file_path)
-    assert (file_name not in all_files)
-    all_files[file_name] = file_path
-
 if platform.system() == "Linux":
+    libs = glob.glob(join(_script_path(), "gcc7", "gcc_root", "lib64", "libatomic*"))
+    libs += glob.glob(join(_script_path(), "gcc7", "gcc_root", "lib64", "libgcc_s*"))
+    libs += glob.glob(join(_script_path(), "gcc7", "gcc_root", "lib64", "libgomp*"))
+    libs += glob.glob(join(_script_path(), "gcc7", "gcc_root", "lib64", "libquadmath*"))
+    libs += glob.glob(join(_script_path(), "gcc7", "gcc_root", "lib64", "libssp*"))
+    print(libs)
+
+    all_files = {}
+    for file_path in libs:
+        file_name = os.path.basename(file_path)
+        assert (file_name not in all_files)
+        all_files[file_name] = file_path
+
     # Update the RPATH of the Python extensions to look in the current directory
     _update_rpath(all_files, '$ORIGIN')
 
 elif platform.system() == "Darwin":
+    libs = glob.glob(join(_script_path(), "gcc7", "gcc_root", "lib", "libatomic*"))
+    libs += glob.glob(join(_script_path(), "gcc7", "gcc_root", "lib", "libgcc_s*"))
+    libs += glob.glob(join(_script_path(), "gcc7", "gcc_root", "lib", "libgomp*"))
+    libs += glob.glob(join(_script_path(), "gcc7", "gcc_root", "lib", "libquadmath*"))
+    libs += glob.glob(join(_script_path(), "gcc7", "gcc_root", "lib", "libssp*"))
+    print(libs)
+
+    all_files = {}
+    for file_path in libs:
+        file_name = os.path.basename(file_path)
+        assert (file_name not in all_files)
+        all_files[file_name] = file_path
+
     # Make the search paths relative
     for file_path in libs:
         cmd = "otool -L %s" % file_path
@@ -114,6 +126,7 @@ elif platform.system() == "Darwin":
                 subprocess.check_output(cmd, shell=True)
 
     # Make the install_name relative
+    gcc_lib_path = join(args_extra.gcc_install_prefix, "lib")
     for file_path in libs:
         cmd = "otool -D %s" % file_path
         otool_res = subprocess.check_output(cmd, shell=True).decode('utf-8')

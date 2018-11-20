@@ -12,7 +12,8 @@ cd ~/gcc_src
 ./contrib/download_prerequisites --no-graphite
 mkdir ~/gcc_build
 cd ~/gcc_build
-~/gcc_src/configure --prefix ~/gcc7_install/ --enable-languages=c --disable-bootstrap --enable-nls --disable-lto --disable-multilib
+#~/gcc_src/configure --prefix ~/gcc7_install/ --enable-languages=c --disable-bootstrap --enable-nls --disable-lto --disable-multilib
+~/gcc_src/configure --prefix ~/gcc7_install/ --enable-languages=c --disable-bootstrap --enable-nls
 make &> log.txt # travis cannot handle that much output
 make install
 cd ~/gcc7_install/
