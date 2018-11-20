@@ -82,11 +82,11 @@ def _update_rpath(filename_list, rpath):
 _copy_dirs(args_extra.gcc_install_prefix, join(_script_path(), "gcc7", "gcc_root"))
 
 if platform.system() == "Linux":
-    libs = glob.glob(join(_script_path(), "gcc7", "gcc_root", "lib64", "libatomic*"))
-    libs += glob.glob(join(_script_path(), "gcc7", "gcc_root", "lib64", "libgcc_s*"))
-    libs += glob.glob(join(_script_path(), "gcc7", "gcc_root", "lib64", "libgomp*"))
-    libs += glob.glob(join(_script_path(), "gcc7", "gcc_root", "lib64", "libquadmath*"))
-    libs += glob.glob(join(_script_path(), "gcc7", "gcc_root", "lib64", "libssp*"))
+    libs = glob.glob(join(_script_path(), "gcc7", "gcc_root", "lib64", "libatomic*.so"))
+    libs += glob.glob(join(_script_path(), "gcc7", "gcc_root", "lib64", "libgcc*.so"))
+    libs += glob.glob(join(_script_path(), "gcc7", "gcc_root", "lib64", "libgomp*.so"))
+    libs += glob.glob(join(_script_path(), "gcc7", "gcc_root", "lib64", "libquadmath*.so"))
+    libs += glob.glob(join(_script_path(), "gcc7", "gcc_root", "lib64", "libssp*.so"))
     print(libs)
 
     all_files = {}
@@ -160,7 +160,7 @@ class taged_bdist_wheel(bdist_wheel):
 setup(
     cmdclass={'bdist_wheel': taged_bdist_wheel},
     name='gcc7',
-    version="0.0.5",
+    version="0.0.6",
     description='GCC v7 binaries',
     long_description=long_description,
 
