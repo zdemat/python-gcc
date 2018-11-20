@@ -13,19 +13,16 @@ cd ~/gcc_src
 mkdir ~/gcc_build
 cd ~/gcc_build
 ~/gcc_src/configure --prefix ~/gcc7_install/ --enable-languages=c --disable-bootstrap --enable-nls --disable-lto --disable-multilib
-make &> log.txt
+make &> log.txt # travis cannot handle that much output
 make install
 cd ~/gcc7_install/
-rm -R share
-find . -name "*.a" -type f|xargs rm -f
-find ./libexec/gcc/x86_64-pc-linux-gnu/7.3.0 -maxdepth 1 -type f -size +10M -print0 | xargs -0 \
-    strip --strip-unneeded \
-    --remove-section=.comment --remove-section=.note || true
+#rm -R share
+#find . -name "*.a" -type f|xargs rm -f
 
-ls
+# Stripping unneeded data in the binaries
+find ./libexec/gcc/x86_64-pc-linux-gnu/7.3.0 -maxdepth 1 -type f -size +10M -print0 | xargs -0 \
+    strip --strip-unneeded --remove-section=.comment --remove-section=.note
+
 ls -Rlh
 du -sh
-
-
-
 
