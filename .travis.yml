@@ -22,5 +22,5 @@ matrix:
       #    - os: osx
       #      osx_image: xcode8.3
     - os: osx
-      osx_image: xcode9.4
+      osx_image: xcode10.1
     - os: linux
